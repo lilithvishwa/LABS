@@ -1,0 +1,23 @@
+%{
+#include "y.tab.h"
+%}
+
+digit   [0-9]+
+whitespace [ \t\n]
+
+%%
+
+{digit}            { yylval = atoi(yytext); return NUMBER; }
+"+"                { return PLUS; }
+"-"                { return MINUS; }
+"*"                { return MULTIPLY; }
+"/"                { return DIVIDE; }
+"("                { return LPAREN; }
+")"                { return RPAREN; }
+{whitespace}       { /* Ignore whitespace */ }
+.                  { printf("Invalid character: %s\n", yytext); }
+
+%%
+int yywrap() {
+    return 1;
+}

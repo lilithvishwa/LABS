@@ -1,0 +1,42 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+int COMMENT = 0;
+%}
+%option noyywrap
+%option yylineno
+identifier [a-zA-Z][a-zA-Z0-9]*
+%%
+#.* { printf("\n%s is a preprocessor directive", yytext); }
+int|float|void|main|if|else|printf|scanf|for|char|getch|while { printf("\n%s is a keyword", yytext);
+}
+"/\\*" { COMMENT = 1; } /* Start of block comment */
+"\\*/" { COMMENT = 0; } /* End of block comment */
+{identifier}\( { if (!COMMENT) printf("\nFunction:\t%s", yytext); }
+"{" { if (!COMMENT) printf("\nBlock begins"); }
+"}" { if (!COMMENT) printf("\nBlock ends"); }
+{identifier}(\[[0-9]*\])? { if (!COMMENT) printf("\n%s is an Identifier", yytext); }
+\".*\" { if (!COMMENT) printf("\n%s is a string", yytext); }
+[0-9]+ { if (!COMMENT) printf("\n%s is a number", yytext); }
+\)(\;)? { if (!COMMENT) { printf("\t"); ECHO; printf("\n"); } }
+\( { ECHO; }
+= { if (!COMMENT) printf("\n%s is an Assignment operator", yytext); }
+\<=|\>=|\<|== { if (!COMMENT) printf("\n%s is a relational operator", yytext); }
+.|\n { /* Ignore all other characters and newlines */ }
+%%
+int main(int argc, char **argv) {
+ if (argc > 1) {
+ FILE *file = fopen(argv[1], "r");
+ if (!file) {
+ printf("\nCould not open the file: %s", argv[1]);
+ exit(1);
+ }
+ yyin = file;
+ }
+ yylex();
+ printf("\n\n");
+ return 0;
+}
+int yywrap() {
+ return 1;
+}

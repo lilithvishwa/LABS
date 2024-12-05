@@ -1,0 +1,38 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+
+%token NUMBER
+%token PLUS MINUS MULTIPLY DIVIDE LPAREN RPAREN
+
+%%
+expression:
+      expression PLUS term         { printf("Addition\n"); }
+    | expression MINUS term        { printf("Subtraction\n"); }
+    | term
+    ;
+
+term:
+      term MULTIPLY factor         { printf("Multiplication\n"); }
+    | term DIVIDE factor           { printf("Division\n"); }
+    | factor
+    ;
+
+factor:
+      LPAREN expression RPAREN     { printf("Parenthesized Expression\n"); }
+    | NUMBER                       { printf("Number: %d\n", $1); }
+    ;
+
+%%
+
+int main() {
+    printf("Enter an arithmetic expression:\n");
+    yyparse();
+    return 0;
+}
+
+int yyerror(const char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+    return 0;
+}

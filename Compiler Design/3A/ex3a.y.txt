@@ -1,0 +1,28 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+%token A
+%token ID
+%%
+statement: A '=' E
+ | E
+ {
+ printf("\nValid arithmetic expression");
+ $$ = $1;
+ }
+ ;
+E: E '+' ID { printf("\nPLUS operation"); }
+| E '-' ID { printf("\nMINUS operation"); }
+| E '*' ID { printf("\nMULTIPLICATION operation"); }
+| E '/' ID { printf("\nDIVISION operation"); }
+| ID
+;
+%%
+int main() {
+ yyparse();
+ return 0;
+}
+void yyerror(char *s) {
+ fprintf(stderr, "Error: %s\n", s);
+}
