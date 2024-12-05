@@ -1,0 +1,27 @@
+# Create a new simulation object
+set ns [new Simulator]
+# Create nodes
+set n0 [$ns node]
+set n1 [$ns node]
+# Create links
+$ns duplex-link $n0 $n1 1Mb 10ms DropTail
+# Create TCP agents
+set tcp0 [new Agent/TCP]
+$ns attach-agent $n0 $tcp0
+set sink0 [new Agent/TCPSink]
+$ns attach-agent $n1 $sink0
+$ns connect $tcp0 $sink0
+# Configure TCP Tahoe
+$tcp0 set window_ 10
+$tcp0 set packetSize_ 1000
+$tcp0 set maxseq_ 1000
+# Configure TCP Reno
+set tcp1 [new Agent/TCP/Reno]
+$ns attach-agent $n0 $tcp1
+set sink1 [new Agent/TCPSink]
+$ns attach-agent $n1 $sink1
+$ns connect $tcp1 $sink1
+# Set simulation end time
+$ns at 5.0 "$ns stop"
+# Start the simulation
+$ns run
